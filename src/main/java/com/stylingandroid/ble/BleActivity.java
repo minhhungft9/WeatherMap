@@ -23,9 +23,10 @@ public class BleActivity extends Activity implements DeviceListFragment.OnDevice
 	public static final String TAG = "BluetoothLE";
 	private final int ENABLE_BT = 1;
 
-	private final Messenger mMessenger;
+	private final Messenger mMessenger;	//message handler
+	private Messenger mService = null;	//send message to BleService
+
 	private Intent mServiceIntent;
-	private Messenger mService = null;
 	private BleService.State mState = BleService.State.UNKNOWN;
 
 	private MenuItem mRefreshItem = null;

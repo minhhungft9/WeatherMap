@@ -7,7 +7,7 @@
 	<string name="scanning">Looking for devices. Please wait…</string>
 	<string name="no_devices">No devices found.</string>
 	<string name="temp_label">Temperature: </string>
-	<string name="temp_format">%1$.1f°</string>
+	<string name="temp_format">%1$.1f°C</string>
 	<string name="humidity_label">Humidity: </string>
 	<string name="humidity_format">%1$.1f%%</string>
 	<string name="light_level">Light level: </string>

@@ -41,10 +41,10 @@ public class MapFragment extends Fragment {
 	private TextView lightSensor = null;
 	private TextView tempSensor = null;
 	private TextView humSensor = null;
-	//private TextView sensorLabel = null;
 
 	private JsonData data;
 	private double traveledDistance;
+	private boolean firstPost = true;
 
 	public double temp;
 	public double humi;
@@ -56,7 +56,6 @@ public class MapFragment extends Fragment {
 		if (v != null) {
 			tv = (TextView) v.findViewById(R.id.textView);
 			tv.setText("Not connected");
-			//sensorLabel = v.findViewById(R.id.sensorLabel);
 
 			lightSensor = v.findViewById(R.id.lightLevel);
 			tempSensor = v.findViewById(R.id.temperature);
@@ -103,7 +102,6 @@ public class MapFragment extends Fragment {
 		    lightSensor.setText(getString(R.string.light_level) + getString(R.string.light_level_format, luxometer));
         }
 	    lightLevel = Math.round(luxometer*10) / 10.0;
-
 	}
 
 	/* Class My Location Listener */
@@ -120,11 +118,19 @@ public class MapFragment extends Fragment {
 			Log.d("tag", "Lon: "+String.valueOf(lon));
 
 			data = new JsonData(temp, humi, lightLevel, loc);
+
 			traveledDistance++;
 
 			String connect = "";
 			if(isConnected()){
 				connect = "You are connected";
+
+				//Check for first post on server
+				if(firstPost){
+					data.pushToSever();
+					firstPost = false;
+				}
+				//Then send data for every 1km
 				if(traveledDistance == 1000){
 					data.pushToSever();
 					traveledDistance = 0;
@@ -133,29 +139,13 @@ public class MapFragment extends Fragment {
 			else{
 				connect = "You are NOT conncted";
 			}
+
 			// Display location
 			String Text = "Your current location is: " + "\nLatitude: " + lat + "\nLongitude: " + lon + "\n" + connect;
 			tv.setText(Text);
 
 			GeoPoint curLoc = new GeoPoint(loc.getLatitude(), loc.getLongitude());
-			List<Overlay> mapOverlays = new ArrayList<>();
-			Drawable icon = null;
-			if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.LOLLIPOP) {
-				icon = getResources().getDrawable(R.drawable.ic_location_on_black_24dp, null);
-			} else {
-				icon = getResources().getDrawable(R.drawable.ic_location_on_black_24dp);
-			}
-
-			Marker marker = new Marker(map);
-			marker.setPosition(curLoc);
-			marker.setTitle("Temperature: "+ temp + "\u2103" + "\nHumidity: " + humi + "%" + "\nLight level: " + lightLevel + "lux");
-			marker.setIcon(icon);
-			mapOverlays.add(marker);
-
-			map.getOverlays().clear();
-			map.getOverlays().addAll(mapOverlays);
-			map.invalidate();
-			mapController.setCenter(curLoc);
+			mapSetMarker(curLoc);
 		}
 
 		@Override
@@ -172,6 +162,27 @@ public class MapFragment extends Fragment {
 		public void onStatusChanged(String provider, int status, Bundle extras){
 
 		}
+	}
+
+	public void mapSetMarker(GeoPoint loc){
+		List<Overlay> mapOverlays = new ArrayList<>();
+		Drawable icon = null;
+		if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.LOLLIPOP) {
+			icon = getResources().getDrawable(R.drawable.ic_location_on_black_24dp, null);
+		} else {
+			icon = getResources().getDrawable(R.drawable.ic_location_on_black_24dp);
+		}
+
+		Marker marker = new Marker(map);
+		marker.setPosition(loc);
+		marker.setTitle("Temperature: "+ temp + "\u2103" + "\nHumidity: " + humi + "%" + "\nLight level: " + lightLevel + "lux");
+		marker.setIcon(icon);
+		mapOverlays.add(marker);
+
+		map.getOverlays().clear();
+		map.getOverlays().addAll(mapOverlays);
+		map.invalidate();
+		mapController.setCenter(loc);
 	}
 
 	public boolean isConnected(){

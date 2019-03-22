@@ -32,6 +32,11 @@ import static java.lang.Math.pow;
 
 public class BleService extends Service implements BluetoothAdapter.LeScanCallback {
 	public static final String TAG = "BleService";
+
+	private final IncomingHandler mHandler;							//handle message
+	private final Messenger mMessenger;								//receive message
+	private final List<Messenger> mClients = new LinkedList<Messenger>();	//send message to activities
+
 	static final int MSG_REGISTER = 1;
 	static final int MSG_UNREGISTER = 2;
 	static final int MSG_START_SCAN = 3;
@@ -61,9 +66,6 @@ public class BleService extends Service implements BluetoothAdapter.LeScanCallba
 	private static final Queue<Object> sWriteQueue = new ConcurrentLinkedQueue<Object>();
 	private static boolean sIsWriting = false;
 
-	private final IncomingHandler mHandler;
-	private final Messenger mMessenger;
-	private final List<Messenger> mClients = new LinkedList<Messenger>();
 	private final Map<String, BluetoothDevice> mDevices = new HashMap<String, BluetoothDevice>();
 	private BluetoothGatt mGatt = null;
 
