@@ -71,7 +71,6 @@ public class JsonData {
     }
 
     public void pushToSever(){
-        //new HttpAsyncTask().execute("http://hmkcode.appspot.com/jsonservlet");
         new HttpAsyncTask().execute("https://weathermap-api.herokuapp.com/v2/weather");
     }
 
